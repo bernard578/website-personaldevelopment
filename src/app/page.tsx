@@ -12,6 +12,9 @@ export default function Home() {
       <header className="container mx-auto p-6 flex justify-between items-center">
         <h1 className="text-3xl font-bold">GrowMe</h1>
         <nav className="space-x-4">
+          <Link href="/blog" className="hover:underline">
+            Blog
+          </Link>
           <Link href="#features" className="hover:underline">
             Features
           </Link>
