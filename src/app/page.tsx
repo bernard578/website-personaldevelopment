@@ -14,7 +14,7 @@ export default function Home() {
         <nav className="space-x-4">
           <Link href="/blog" className="hover:underline">
             Blog
-          </Link>
+          </Link>“
           <Link href="#features" className="hover:underline">
             Features
           </Link>
@@ -42,7 +42,7 @@ export default function Home() {
             A personal development toolkit that combines habit tracking, goal
             setting, and mindful reflection—all in one place.
           </p>
-          <Button size="lg" asChild className="text-lg font-semibold shadow-xl">
+          <Button variant="outline" size="lg" asChild className="text-lg font-semibold shadow-xl">
             <Link href="#signup">Start Your Journey</Link>
           </Button>
         </div>

@@ -1,75 +1,80 @@
 // src/app/blog/page.tsx
+import Image from 'next/image'
+import Link from 'next/link'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import { Card, CardContent } from '@/components/ui/card'
 
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
+export const revalidate = 60
 
-interface PostMeta {
-  slug: string;
-  title: string;
+// 1️⃣ Slugify helper
+function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '')
 }
 
-interface CategoryBlock {
-  category: string;
-  displayName: string;
-  posts: PostMeta[];
+// 2️⃣ Humanize category
+function humanizeCategory(slug: string) {
+  return slug
+    .split('-')
+    .map(w => w[0].toUpperCase() + w.slice(1))
+    .join(' ')
 }
 
-export default function BlogIndexPage() {
-  const postsRoot = path.join(process.cwd(), 'content/posts');
-  if (!fs.existsSync(postsRoot)) {
-    notFound();
-  }
-  
-  const categories = fs
-    .readdirSync(postsRoot)
-    .filter((dir) => fs.statSync(path.join(postsRoot, dir)).isDirectory());
-
-  const blocks: CategoryBlock[] = [];
-
-  for (const category of categories) {
-    const dirPath = path.join(postsRoot, category);
-    const files = fs.readdirSync(dirPath).filter((f) => /\.mdx?$/.test(f));
-    if (files.length === 0) continue; // skip empty
-
-    // Map front-matter titles
-    const metas = files.map((file) => {
-      const slug = file.replace(/\.[^/.]+$/, '');
-      const raw = fs.readFileSync(path.join(dirPath, file), 'utf8');
-      const { data } = matter(raw);
-      return { slug, title: data.title ?? slug };
-    });
-
-    // Limit to first 2 posts
-    const posts = metas.slice(0, 2);
-    blocks.push({ category, displayName: capitalize(category), posts });
-  }
+export default async function BlogPage() {
+  const payload = await getPayload({ config })
+  const { docs: posts } = await payload.find({
+    collection: 'posts',
+    sort: '-createdAt',
+    depth: 1,
+    pagination: false,
+  })
 
   return (
-    <main className="container mx-auto py-12 px-6">
-      {blocks.map(({ category, displayName, posts }) => (
-        <section key={category} className="mb-10">
-          <h2 className="text-3xl font-bold mb-4">{displayName}</h2>
-          <ul className="list-disc list-inside space-y-2">
-            {posts.map(({ slug, title }) => (
-              <li key={slug}>
-                <Link
-                  href={`/blog/${category}/${slug}`}
-                  className="text-indigo-600 hover:underline"
-                >
-                  {title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-    </main>
-  );
-}
+    <main className="container mx-auto px-6 py-12">
+      <h1 className="text-4xl font-bold mb-8">All Posts</h1>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {posts.map((post) => {
+          const title = post.title as string
+          const postSlug = slugify(title)
 
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+          const catSlug = post.category as string
+          const categoryLabel = humanizeCategory(catSlug)
+
+          const thumb = post.thumbnail
+          const thumbnailUrl = typeof thumb === 'string' ? undefined : thumb?.url
+
+          return (
+            <Card key={post.id} className="hover:shadow-lg">
+              <Link href={`/blog/${postSlug}`} className="block">
+                {thumbnailUrl && (
+                  <div className="relative h-48 w-full">
+                    <Image
+                      src={thumbnailUrl}
+                      alt={title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  </div>
+                )}
+                <CardContent className="p-4">
+                  <p className="text-sm text-gray-500 mb-1">
+                    {categoryLabel}
+                  </p>
+                  <h2 className="text-xl font-semibold mb-2">{title}</h2>
+                  <p className="text-indigo-600 hover:underline">
+                    Read more →
+                  </p>
+                </CardContent>
+              </Link>
+            </Card>
+          )
+        })}
+      </div>
+    </main>
+  )
 }
