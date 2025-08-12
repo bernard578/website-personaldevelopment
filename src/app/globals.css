@@ -122,3 +122,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+.anchor-link {
+  display: block;       /* whole heading is clickable */
+  color: inherit;       /* keep the heading color */
+  text-decoration: none;
+}
+.anchor-link:hover {
+  text-decoration: underline;
+}

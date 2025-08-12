@@ -14,9 +14,9 @@ export default function Home() {
         <nav className="space-x-4">
           <Link href="/blog" className="hover:underline">
             Blog
-          </Link>“
-          <Link href="#features" className="hover:underline">
-            Features
+          </Link>
+          <Link href="/alati" className="hover:underline">
+            Alati
           </Link>
           <Link href="#pricing" className="hover:underline">
             Pricing

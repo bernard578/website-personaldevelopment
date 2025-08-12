@@ -1,5 +1,6 @@
 import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { slugify } from '@/utils/slugify'
 
 import {
   lexicalEditor,
@@ -42,6 +43,16 @@ const Posts: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'date'],
   },
+  access: {
+    read: ({ req }) => {
+      // If the request is authenticated (admin/editor), allow all
+      if (req.user) return true
+      // Public (unauthenticated) requests only get published posts
+      return {
+        _status: { equals: 'published' },
+      }
+    },
+  },
   fields: [
     { name: 'title',
       type: 'text',
@@ -68,7 +79,6 @@ const Posts: CollectionConfig = {
 
     {
       name: 'body',
-      label: 'Post',
       type: 'richText',
       required: true,
       editor: lexicalEditor({
@@ -88,13 +98,8 @@ const Posts: CollectionConfig = {
       hooks: {
         beforeValidate: [
           ({ data }) => {
-            // Guard against data being undefined
             if (!data || typeof data.title !== 'string') return
-            
-            data.slug = data.title
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, '-')
-              .replace(/(^-|-$)+/g, '')
+            data.slug = slugify(data.title)
           },
         ],
       },
