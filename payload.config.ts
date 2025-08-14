@@ -1,6 +1,6 @@
 import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { slugify } from '@/utils/slugify'
+import { slugify } from '@/lib/utils/slugify'
 
 import {
   lexicalEditor,
@@ -23,6 +23,9 @@ const mustGetEnv = (key: string): string => {
 /* ------------------------------------------------------------------ */
 const Media: CollectionConfig = {
   slug: 'media',
+  access: {
+    read: () => true,            // ⬅️ allow public reads
+  },
   upload: {
     staticDir: 'media',           // stored in <projectRoot>/media
     mimeTypes: ['image/*'],       // restrict picker to images only

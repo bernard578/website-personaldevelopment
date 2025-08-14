@@ -4,7 +4,7 @@
 import { $isHeadingNode }            from '@lexical/rich-text'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useEffect }                 from 'react'
-import { slugify }                   from '@/utils/slugify'
+import { slugify }                   from '@/lib/utils/slugify'
 import { $getRoot }                  from 'lexical'
 
 export default function AutoHeadingIdPlugin() {

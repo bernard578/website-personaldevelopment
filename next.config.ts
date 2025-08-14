@@ -10,7 +10,13 @@ const nextConfig = {
   experimental: {
     reactCompiler: false,
   },
-}
+  images: {
+    remotePatterns: [
+      { protocol: 'http', hostname: 'localhost', port: '3000', pathname: '/api/media/**' },
+      { protocol: 'https', hostname: 'osobnirazvoj.hr', pathname: '/api/media/**' },
+    ],
+  },
+} satisfies NextConfig
 
 // Make sure you wrap your `nextConfig`
 // with the `withPayload` plugin
