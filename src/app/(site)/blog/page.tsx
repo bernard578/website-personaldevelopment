@@ -42,12 +42,12 @@ export default async function BlogPage() {
             <Card key={post.id} className="rounded-xl border border-zinc-200 bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden">
               <Link href={`/blog/${postSlug}`} className="block">
                 {thumbnailUrl && (
-                  <div className="relative aspect-[16/9] w-full">
+                  <div className="relative w-full h-48 bg-white">
                     <Image
-                      src={thumbnailUrl}         // npr. /api/media/file/pomodoro.png
+                      src={thumbnailUrl}
                       alt={title}
                       fill
-                      className="object-cover"
+                      className="object-contain p-2"   // ⬅️ no crop + some breathing room
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   </div>

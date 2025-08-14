@@ -13,6 +13,9 @@ export const revalidate = 60
 
 type Props = { params: Promise<{ slug: string }> }
 
+// helper — strip origin if absolute
+const toRelative = (u?: string) =>
+  !u ? undefined : u.startsWith('http') ? new URL(u).pathname : u
 
 export default async function PostPage({ params }: Props) {
   const { slug } = await params
@@ -34,10 +37,12 @@ export default async function PostPage({ params }: Props) {
   const post = docs[0]
   if (!post) notFound()
 
-  const thumb = post.thumbnail
-  const img = typeof thumb === 'string' ? undefined : thumb?.url
-  const categorySlug = (post.category as string) ?? ''
-  const category = humanizeCategory(categorySlug)
+  const thumb = post.thumbnail as any
+  const heroUrl =
+    toRelative(thumb?.url) ??
+    (thumb?.filename ? `/api/media/file/${thumb.filename}` : undefined)
+
+  const category = humanizeCategory((post.category as string) ?? '')
   const dateISO = (post as any).date ?? (post as any).createdAt
   const dateLabel = dateISO ? new Date(dateISO).toLocaleDateString('hr-HR') : ''
 
@@ -53,9 +58,17 @@ export default async function PostPage({ params }: Props) {
         {dateLabel && <p className="text-sm text-zinc-500">{dateLabel}</p>}
       </div>
 
-      {img && (
-        <div className="relative mb-10 aspect-[16/9] w-full overflow-hidden rounded-xl border border-zinc-200">
-          <Image src={img} alt={String(post.title)} fill className="object-cover" />
+      {/* Option A — show full image, no crop */}
+      {heroUrl && (
+        <div className="relative mb-10 w-full h-72 md:h-96 bg-white border border-zinc-200 rounded-xl overflow-hidden">
+          <Image
+            src={heroUrl}
+            alt={String(post.title)}
+            fill
+            className="object-contain p-3"  // no crop + breathing room
+            sizes="100vw"
+            priority
+          />
         </div>
       )}
 

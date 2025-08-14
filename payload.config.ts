@@ -1,13 +1,13 @@
 import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { slugify } from '@/lib/utils/slugify'
-
 import {
   lexicalEditor,
-  EXPERIMENTAL_TableFeature,      // <— table support lives behind this flag
+  EXPERIMENTAL_TableFeature,
 } from '@payloadcms/richtext-lexical'
 
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, CollectionSlug } from 'payload'
+import { seoMinimal } from '@/lib/seo/seoFields'   // 👈 import the util
 
 /* ------------------------------------------------------------------ */
 /*  Helper — crash early if an env-var is missing                      */
@@ -19,20 +19,23 @@ const mustGetEnv = (key: string): string => {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Slugs typed for TS                                                 */
+/* ------------------------------------------------------------------ */
+const MEDIA_SLUG: CollectionSlug = 'media'
+
+/* ------------------------------------------------------------------ */
 /*  Media collection — every file / image ends up here                 */
 /* ------------------------------------------------------------------ */
 const Media: CollectionConfig = {
-  slug: 'media',
-  access: {
-    read: () => true,            // ⬅️ allow public reads
-  },
+  slug: MEDIA_SLUG,
+  access: { read: () => true },
   upload: {
-    staticDir: 'media',           // stored in <projectRoot>/media
-    mimeTypes: ['image/*'],       // restrict picker to images only
+    staticDir: 'media',
+    mimeTypes: ['image/*'],
   },
   admin: { useAsTitle: 'filename' },
   fields: [
-    // add alt-text or focal-point fields here if you need them
+    { name: 'alt', type: 'text', label: 'Alt text' },
   ],
 }
 
@@ -47,20 +50,10 @@ const Posts: CollectionConfig = {
     defaultColumns: ['title', 'category', 'date'],
   },
   access: {
-    read: ({ req }) => {
-      // If the request is authenticated (admin/editor), allow all
-      if (req.user) return true
-      // Public (unauthenticated) requests only get published posts
-      return {
-        _status: { equals: 'published' },
-      }
-    },
+    read: ({ req }) => (req.user ? true : { _status: { equals: 'published' } }),
   },
   fields: [
-    { name: 'title',
-      type: 'text',
-      required: true
-    },
+    { name: 'title', type: 'text', required: true },
 
     {
       name: 'category',
@@ -76,7 +69,7 @@ const Posts: CollectionConfig = {
     {
       name: 'thumbnail',
       type: 'upload',
-      relationTo: 'media' as const,
+      relationTo: MEDIA_SLUG,      // ← typed slug
       required: false,
     },
 
@@ -108,30 +101,25 @@ const Posts: CollectionConfig = {
       },
     },
 
-
     {
       name: 'date',
       type: 'date',
       admin: { position: 'sidebar' },
       defaultValue: () => new Date(),
     },
+
+    // ✅ Minimal SEO group appended (two fields: metaTitle + metaDescription)
+    seoMinimal(MEDIA_SLUG),
   ],
-}  
+}
+
 /* ------------------------------------------------------------------ */
 /*  Final Payload configuration                                       */
 /* ------------------------------------------------------------------ */
 export default buildConfig({
   serverURL: process.env.SERVER_URL ?? 'http://localhost:3000',
-
   secret: mustGetEnv('PAYLOAD_SECRET'),
-
-  db: mongooseAdapter({
-    url: mustGetEnv('DATABASE_URI'),    // e.g. mongodb://127.0.0.1:27017/blog
-  }),
-
-  /* global editor defaults (optional) ----------------------------- */
-  editor: lexicalEditor({}),            // applies to any richText field
-                                        // that doesn’t override its features
-
+  db: mongooseAdapter({ url: mustGetEnv('DATABASE_URI') }),
+  editor: lexicalEditor({}),
   collections: [Media, Posts],
 })

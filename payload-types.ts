@@ -121,6 +121,7 @@ export interface UserAuthOperations {
  */
 export interface Media {
   id: string;
+  alt?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -159,6 +160,13 @@ export interface Post {
   };
   slug: string;
   date?: string | null;
+  /**
+   * Basic SEO
+   */
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -253,6 +261,7 @@ export interface PayloadMigration {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -276,6 +285,12 @@ export interface PostsSelect<T extends boolean = true> {
   body?: T;
   slug?: T;
   date?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
