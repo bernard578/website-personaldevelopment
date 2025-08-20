@@ -24,7 +24,7 @@ type Post = {
   id: string
   title: string
   slug: string
-  body: RichTextData            // <-- not unknown anymore
+  body: RichTextData
   category?: string | null
   thumbnail?: Media
   date?: string | null
@@ -46,8 +46,15 @@ const toRelative = (u?: string | null) => {
   }
 }
 
+// ✅ Small frontend fallback: prefer doc.url, else /media/<filename>
+function mediaUrl(m: Media) {
+  if (!m || typeof m === 'string') return undefined
+  const fromUrl = toRelative(m.url ?? undefined)
+  if (fromUrl) return fromUrl
+  return m.filename ? `/media/${m.filename}` : undefined
+}
+
 export default async function PostPage({ params }: Props) {
-  // ✅ must await
   const { slug } = await params
   const normalizedSlug = slugify(slug)
 
@@ -65,21 +72,13 @@ export default async function PostPage({ params }: Props) {
   })
 
   const post = docs[0] as unknown as Post
-  
   if (!post) notFound()
 
-  const thumb = post.thumbnail
-  const heroUrl =
-    typeof thumb === 'string' || !thumb
-      ? undefined
-      : toRelative(thumb.url) ??
-        (thumb.filename ? `/api/media/file/${thumb.filename}` : undefined)
+  const heroUrl = mediaUrl(post.thumbnail)
 
   const category = humanizeCategory(post.category ?? '')
   const dateISO = post.date ?? post.createdAt ?? null
-  const dateLabel = dateISO
-    ? new Date(dateISO).toLocaleDateString('hr-HR')
-    : ''
+  const dateLabel = dateISO ? new Date(dateISO).toLocaleDateString('hr-HR') : ''
 
   return (
     <article className="mx-auto max-w-4xl px-6 py-12">

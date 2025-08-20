@@ -34,6 +34,14 @@ function toRelative(u?: string | null) {
   }
 }
 
+// ✅ Small frontend fallback: prefer doc.url, else /media/<filename>
+function mediaUrl(m: Media) {
+  if (!m || typeof m === 'string') return undefined
+  const fromUrl = toRelative(m.url ?? undefined)
+  if (fromUrl) return fromUrl
+  return m.filename ? `/media/${m.filename}` : undefined
+}
+
 // Optional: nicer label from a kebab slug
 function humanizeCategory(slug?: string | null) {
   if (!slug) return ''
@@ -65,12 +73,7 @@ export default async function BlogPage() {
             const title = String(post.title)
             const postSlug = String(post.slug)
 
-            const thumb = post.thumbnail
-            const thumbnailUrl =
-              typeof thumb === 'string' || !thumb
-                ? undefined
-                : toRelative(thumb.url) ??
-                  (thumb.filename ? `/api/media/file/${thumb.filename}` : undefined)
+            const thumbnailUrl = mediaUrl(post.thumbnail)
 
             const category = humanizeCategory(post.category)
 

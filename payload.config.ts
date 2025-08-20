@@ -8,6 +8,7 @@ import {
 
 import type { CollectionConfig, CollectionSlug } from 'payload'
 import { seoMinimal } from '@/lib/seo/seoFields'   // 👈 import the util
+import path from 'path'
 
 /* ------------------------------------------------------------------ */
 /*  Helper — crash early if an env-var is missing                      */
@@ -30,7 +31,7 @@ const Media: CollectionConfig = {
   slug: MEDIA_SLUG,
   access: { read: () => true },
   upload: {
-    staticDir: 'media',
+    staticDir: path.resolve(process.cwd(), 'public/media'),
     mimeTypes: ['image/*'],
   },
   admin: { useAsTitle: 'filename' },
@@ -38,6 +39,7 @@ const Media: CollectionConfig = {
     { name: 'alt', type: 'text', label: 'Alt text' },
   ],
 }
+
 
 /* ------------------------------------------------------------------ */
 /*  Posts collection — blog articles                                  */
