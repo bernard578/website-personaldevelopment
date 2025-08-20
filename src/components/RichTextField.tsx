@@ -53,7 +53,7 @@ export default function RichTextField({
       const text = h.textContent?.trim() || ''
       if (!text) return
 
-      let base = slugifyId(text) || 'section'
+      const base = slugifyId(text) || 'section'
       let id = base
       let i = 2
       while (used.has(id)) id = `${base}-${i++}`
