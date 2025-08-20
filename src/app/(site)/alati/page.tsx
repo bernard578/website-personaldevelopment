@@ -1,10 +1,10 @@
-import Link from 'next/link'
+import Link from 'next/link';
 
-export const revalidate = 60
+export const revalidate = 60;
 
 export default function AlatiPage() {
   return (
-    <main className="container mx-auto px-6 py-12">
+    <section>
       <h1 className="text-4xl font-bold mb-8">Alati</h1>
       <ul className="space-y-4">
         <li>
@@ -18,6 +18,6 @@ export default function AlatiPage() {
           </Link>
         </li>
       </ul>
-    </main>
-  )
+    </section>
+  );
 }
