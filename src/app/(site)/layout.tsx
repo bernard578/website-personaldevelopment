@@ -17,6 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://osobnirazvoj.hr'), // set your real domain
+  alternates: { canonical: '/' },
   title: {
     default: 'OsobniRazvoj',
     template: '%s · OsobniRazvoj',

@@ -5,13 +5,10 @@ import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import RichTextField from '@/components/RichTextField'
-import Badge from '@/components/ui/Badge'
-import { slugify } from '@/lib/utils/slugify'
-import { humanizeCategory } from '@/lib/utils/humanize'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import type React from 'react'
+import type { Metadata } from 'next'
 
-// infer the exact type that RichText expects
+// ----- Strong types -----
 type RichTextData = React.ComponentProps<typeof RichText>['data']
 
 type Media =
@@ -20,33 +17,36 @@ type Media =
   | null
   | undefined
 
+type SEO = {
+  metaTitle?: string | null
+  metaDescription?: string | null
+}
+
 type Post = {
   id: string
   title: string
   slug: string
   body: RichTextData
-  category?: string | null
   thumbnail?: Media
   date?: string | null
   createdAt?: string | null
   _status?: 'draft' | 'published'
+  seo?: SEO | null
 }
 
 export const revalidate = 60
-
 type Props = { params: Promise<{ slug: string }> }
 
-// helper — strip origin if absolute
+// ----- helpers -----
 const toRelative = (u?: string | null) => {
   if (!u) return undefined
   try {
     return u.startsWith('http') ? new URL(u).pathname : u
   } catch {
-    return u
+    return u ?? undefined
   }
 }
 
-// ✅ Small frontend fallback: prefer doc.url, else /media/<filename>
 function mediaUrl(m: Media) {
   if (!m || typeof m === 'string') return undefined
   const fromUrl = toRelative(m.url ?? undefined)
@@ -54,59 +54,63 @@ function mediaUrl(m: Media) {
   return m.filename ? `/media/${m.filename}` : undefined
 }
 
-export default async function PostPage({ params }: Props) {
-  const { slug } = await params
-  const normalizedSlug = slugify(slug)
-
+async function fetchPostBySlug(slug: string): Promise<Post | null> {
   const payload = await getPayload({ config })
   const { docs } = await payload.find({
     collection: 'posts',
-    where: {
-      and: [
-        { slug: { equals: normalizedSlug } },
-        { _status: { equals: 'published' } },
-      ],
-    },
+    where: { slug: { equals: slug } },
     depth: 2,
     limit: 1,
   })
+  return (docs?.[0] as unknown as Post) ?? null
+}
 
-  const post = docs[0] as unknown as Post
+// ----- Next Metadata (title + description only) -----
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const post = await fetchPostBySlug(slug)
+  if (!post) return {}
+
+  return {
+    title: post.seo?.metaTitle || post.title,
+    description: post.seo?.metaDescription || undefined,
+  }
+}
+
+// ----- Page -----
+export default async function PostPage({ params }: Props) {
+  const { slug } = await params
+  const post = await fetchPostBySlug(slug)
   if (!post) notFound()
 
   const heroUrl = mediaUrl(post.thumbnail)
-
-  const category = humanizeCategory(post.category ?? '')
   const dateISO = post.date ?? post.createdAt ?? null
   const dateLabel = dateISO ? new Date(dateISO).toLocaleDateString('hr-HR') : ''
 
   return (
     <article className="mx-auto max-w-4xl px-6 py-12">
-      <Link
-        href="/blog"
-        className="mb-6 inline-block text-indigo-600 hover:underline"
-      >
+      <Link href="/blog" className="mb-6 inline-block text-indigo-600 hover:underline">
         ← Natrag na sve objave
       </Link>
 
-      <div className="mb-6 space-y-3">
-        {category && <Badge>{category}</Badge>}
-        <h1 className="text-3xl md:text-4xl font-bold leading-tight">
-          {String(post.title)}
-        </h1>
+      <div className="mb-6 space-y-2">
+        <h1 className="text-3xl md:text-4xl font-bold leading-tight">{post.title}</h1>
         {dateLabel && <p className="text-sm text-zinc-500">{dateLabel}</p>}
       </div>
 
       {heroUrl && (
-        <div className="relative mb-10 w-full h-72 md:h-96 bg-white border border-zinc-200 rounded-xl overflow-hidden">
-          <Image
-            src={heroUrl}
-            alt={String(post.title)}
-            fill
-            className="object-contain p-3"
-            sizes="100vw"
-            priority
-          />
+        // Fixed-height, no-crop wrapper; whole image is visible
+        <div className="relative mb-10 w-full overflow-hidden rounded-xl border border-zinc-200 bg-white">
+          <div className="relative w-full h-72 md:h-96">
+            <Image
+              src={heroUrl}
+              alt={post.title}
+              fill
+              className="object-contain p-3"   // <-- key: contain + padding, no cropping
+              sizes="(max-width: 768px) 100vw, 896px"
+              priority={false}
+            />
+          </div>
         </div>
       )}
 
