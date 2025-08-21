@@ -1,23 +1,19 @@
+// src/app/(site)/components/layouts/SiteLayout.tsx
 'use client';
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { ReactNode } from 'react';
 
 interface SiteLayoutProps {
   children: ReactNode;
-  showCta?: boolean;
-  ctaHref?: string;
-  ctaLabel?: string;
   variant?: 'colorful' | 'simple';
+  // NEW: disable chrome (header/footer) by default
+  withChrome?: boolean;
 }
 
 export default function SiteLayout({
   children,
-  showCta = true,
-  ctaHref = '/blog',
-  ctaLabel = 'Započni',
   variant = 'colorful',
+  withChrome = false, // <-- off by default
 }: SiteLayoutProps) {
   const mainClasses =
     variant === 'colorful'
@@ -26,33 +22,19 @@ export default function SiteLayout({
 
   return (
     <main className={mainClasses}>
-      {/* Header */}
-      <header className="container mx-auto p-6 flex justify-between items-center">
-        <h1 className="text-3xl font-bold">OsobniRazvoj</h1>
-        <nav className="flex items-center gap-4">
-          <Link href="/blog" className="hover:underline">Blog</Link>
-          <Link href="/alati" className="hover:underline">Alati</Link>
-          {showCta && (
-            <Link href={ctaHref}>
-              <Button variant={variant === 'colorful' ? 'secondary' : 'default'}>
-                {ctaLabel}
-              </Button>
-            </Link>
-          )}
-        </nav>
-      </header>
-
-      {/* Content */}
-      <div className="flex-1">{children}</div>
-
-      {/* Footer */}
-      <footer className={`py-6 text-center ${
-        variant === 'colorful'
-          ? 'bg-gray-900 text-gray-200'
-          : 'bg-white border-t border-gray-200 text-gray-600'
-      }`}>
-        <p>© {new Date().getFullYear()} OsobniRazvoj. Sva prava pridržana.</p>
-      </footer>
+      {/* render nothing extra unless explicitly requested */}
+      {withChrome ? (
+        <>
+          {/* put your header here only if you ever need a page-specific header */}
+          <div className="container mx-auto p-6" />
+          <div className="flex-1">{children}</div>
+          <footer className="py-6 text-center bg-white border-t border-gray-200 text-gray-600">
+            <p>© {new Date().getFullYear()} OsobniRazvoj. Sva prava pridržana.</p>
+          </footer>
+        </>
+      ) : (
+        <div className="flex-1">{children}</div>
+      )}
     </main>
   );
 }
