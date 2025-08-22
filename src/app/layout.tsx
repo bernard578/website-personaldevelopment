@@ -4,7 +4,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://osobnirazvoj.hr'),
-  alternates: { canonical: '/' },
+  alternates: { canonical: 'https://osobnirazvoj.hr/' },
   robots: { index: true, follow: true },
 }
 

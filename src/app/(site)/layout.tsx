@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://osobnirazvoj.hr'),
-  alternates: { canonical: '/', languages: { hr: '/', 'x-default': '/' } },
+  alternates: { canonical: 'https://osobnirazvoj.hr/', languages: { hr: '/', 'x-default': '/' } },
   title: { default: 'OsobniRazvoj', template: '%s · OsobniRazvoj' },
   description:
     'Alati za osobni razvoj: blog o financijama, upravljanje vremenom, pomodoro timer i još mnogo toga.',
