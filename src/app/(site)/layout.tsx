@@ -15,7 +15,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://osobnirazvoj.hr'),
-  alternates: { canonical: 'https://osobnirazvoj.hr/', languages: { hr: '/', 'x-default': '/' } },
+  alternates: {
+    canonical: 'https://osobnirazvoj.hr/',           // keep the slash
+    languages: { hr: '/', 'x-default': '/' },
+  },
   title: { default: 'OsobniRazvoj', template: '%s · OsobniRazvoj' },
   description:
     'Alati za osobni razvoj: blog o financijama, upravljanje vremenom, pomodoro timer i još mnogo toga.',
@@ -23,11 +26,11 @@ export const metadata: Metadata = {
     title: 'OsobniRazvoj',
     description:
       'Alati za osobni razvoj: blog o financijama, upravljanje vremenom, pomodoro timer i još mnogo toga.',
-    url: '/',
+    url: 'https://osobnirazvoj.hr/',                 // ← make this absolute + slash
     siteName: 'OsobniRazvoj',
     type: 'website',
   },
-};
+}
 
 export default function SiteGroupLayout({ children }: { children: React.ReactNode }) {
   return (
