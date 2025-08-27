@@ -1,7 +1,8 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next'
-import GoogleAnalytics from "@/components/GoogleAnalytics";
-import GAReporter from "@/components/GAReporter";
+import { Suspense } from 'react'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
+import GAReporter from '@/components/GAReporter'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -11,14 +12,16 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const GA_ID = "G-KN5Q4BVCWE";
+  const GA_ID = 'G-KN5Q4BVCWE'
 
   return (
     <html lang="hr">
       <body>
         {children}
         <GoogleAnalytics GA_MEASUREMENT_ID={GA_ID} />
-        <GAReporter GA_MEASUREMENT_ID={GA_ID} />
+        <Suspense fallback={null}>
+          <GAReporter GA_MEASUREMENT_ID={GA_ID} />
+        </Suspense>
       </body>
     </html>
   )
