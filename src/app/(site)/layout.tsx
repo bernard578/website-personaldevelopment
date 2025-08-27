@@ -30,6 +30,14 @@ export const metadata: Metadata = {
     siteName: 'OsobniRazvoj',
     type: 'website',
   },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/logo.png',
+    other: [
+      {rel: 'icon', url: '/logo.png', type: 'image/png'},
+    ]
+  },
 }
 
 export default function SiteGroupLayout({ children }: { children: React.ReactNode }) {
