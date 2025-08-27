@@ -2,9 +2,14 @@
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
+type GtagCommand = "config" | "event" | "js";
+
 declare global {
-  interface Window { gtag?: (...args: any[]) => void }
+  interface Window {
+    gtag?: (command: GtagCommand, targetId: string, params?: Record<string, unknown>) => void;
+  }
 }
+
 
 export default function GAReporter({ GA_MEASUREMENT_ID }: { GA_MEASUREMENT_ID: string }) {
   const pathname = usePathname();
