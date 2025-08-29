@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const GA_ID = 'G-KN5Q4BVCWE'
+  const GA_ID = 'G-GKV39BDX4F'
 
   return (
     <html lang="hr">
