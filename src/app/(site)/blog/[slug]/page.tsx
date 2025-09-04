@@ -8,6 +8,9 @@ import RichTextField from '@/components/RichTextField'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { Metadata } from 'next'
 
+
+const BASE_URL = "https://osobnirazvoj.hr";
+
 // ----- Strong types -----
 type RichTextData = React.ComponentProps<typeof RichText>['data']
 
@@ -33,6 +36,7 @@ type Post = {
   _status?: 'draft' | 'published'
   seo?: SEO | null
 }
+
 
 export const revalidate = 60
 type Props = { params: Promise<{ slug: string }> }
@@ -67,14 +71,23 @@ async function fetchPostBySlug(slug: string): Promise<Post | null> {
 
 // ----- Next Metadata (title + description only) -----
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params
-  const post = await fetchPostBySlug(slug)
-  if (!post) return {}
+  const { slug } = await params; // if you keep Promise, do: const { slug } = await params;
+  const post = await fetchPostBySlug(slug);
+  if (!post) return {};
+
+  const title = post.seo?.metaTitle || post.title;
+  const description = post.seo?.metaDescription || undefined;
+  const canonical = `${BASE_URL}/blog/${encodeURIComponent(slug)}`;
 
   return {
-    title: post.seo?.metaTitle || post.title,
-    description: post.seo?.metaDescription || undefined,
-  }
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: { url: canonical, title, description },
+    twitter: { card: "summary_large_image", title, description },
+  };
 }
 
 // ----- Page -----

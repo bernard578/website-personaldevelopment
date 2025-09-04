@@ -16,7 +16,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://osobnirazvoj.hr'),
   alternates: {
-    canonical: 'https://osobnirazvoj.hr/',           // keep the slash
     languages: { hr: '/', 'x-default': '/' },
   },
   title: { default: 'OsobniRazvoj', template: '%s · OsobniRazvoj' },

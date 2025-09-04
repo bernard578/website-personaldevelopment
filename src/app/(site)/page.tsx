@@ -4,6 +4,16 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import SiteLayout from "@/app/(site)/components/layouts/SiteLayout";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "https://osobnirazvoj.hr/", // homepage canonical
+  },
+  title: "OsobniRazvoj",
+  description:
+    "Tvoje odredište za znanje o financijama, upravljanju vremenom, razvoju navika i osobnom rastu - sve na jednom mjestu.",
+};
 
 export default function Home() {
   return (
