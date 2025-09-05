@@ -9,6 +9,7 @@ const tools = [
   { href: "/alati/pomodoro", label: "Pomodoro Timer", icon: "⏳" },
   { href: "/alati/stopwatch", label: "Stopwatch", icon: "⏱️" },
   { href: "/alati/compound-interest-calculator", label: "Kalkulator složene kamate", icon: "💰" },
+  { href: "/alati/pdv-kalkulator", label: "PDV kalkulator", icon: "🧮" },
 ];
 
 export default function AlatiLayout({ children }: { children: React.ReactNode }) {
@@ -134,6 +135,9 @@ function getBreadcrumb(pathname: string | null): Crumb[] {
   }
   if (pathname.startsWith("/alati/compound-interest-calculator")) {
     return [...base, { label: "Kalkulator složene kamate" }];
+  }
+  if (pathname.startsWith("/alati/pdv-kalkulator")) {
+    return [...base, { label: "PDV kalkulator" }];
   }
 
   return base;
