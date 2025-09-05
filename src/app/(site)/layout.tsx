@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: 'OsobniRazvoj',
     description:
       'Alati za osobni razvoj: blog o financijama, upravljanje vremenom, pomodoro timer i još mnogo toga.',
-    url: 'https://osobnirazvoj.hr/',                 // ← make this absolute + slash
+    url: 'https://osobnirazvoj.hr/',
     siteName: 'OsobniRazvoj',
     type: 'website',
   },
