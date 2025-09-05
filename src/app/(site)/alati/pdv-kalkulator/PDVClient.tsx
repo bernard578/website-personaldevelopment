@@ -47,7 +47,7 @@ export default function PDVClient() {
               <span className="block text-sm font-medium mb-1">Vrsta izračuna</span>
               <select
                 value={mode}
-                onChange={(e) => setMode(e.target.value as any)}
+                onChange={(e) => setMode(e.target.values as "neto2bruto" | "bruto2neto")}
                 className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2"
               >
                 <option value="neto2bruto">Neto → Bruto</option>
