@@ -1,4 +1,5 @@
 // src/app/(site)/blog/[slug]/page.tsx
+import { cache } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -6,6 +7,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import RichTextField from '@/components/RichTextField'
 import { RichText } from '@payloadcms/richtext-lexical/react'
+import { mediaUrl } from '@/lib/media'
 import type { Metadata } from 'next'
 
 
@@ -13,12 +15,6 @@ const BASE_URL = "https://osobnirazvoj.hr";
 
 // ----- Strong types -----
 type RichTextData = React.ComponentProps<typeof RichText>['data']
-
-type Media =
-  | { url?: string | null; filename?: string | null }
-  | string
-  | null
-  | undefined
 
 type SEO = {
   metaTitle?: string | null
@@ -30,7 +26,7 @@ type Post = {
   title: string
   slug: string
   body: RichTextData
-  thumbnail?: Media
+  thumbnail?: Parameters<typeof mediaUrl>[0]
   date?: string | null
   createdAt?: string | null
   _status?: 'draft' | 'published'
@@ -41,24 +37,7 @@ type Post = {
 export const revalidate = 60
 type Props = { params: Promise<{ slug: string }> }
 
-// ----- helpers -----
-const toRelative = (u?: string | null) => {
-  if (!u) return undefined
-  try {
-    return u.startsWith('http') ? new URL(u).pathname : u
-  } catch {
-    return u ?? undefined
-  }
-}
-
-function mediaUrl(m: Media) {
-  if (!m || typeof m === 'string') return undefined
-  const fromUrl = toRelative(m.url ?? undefined)
-  if (fromUrl) return fromUrl
-  return m.filename ? `/media/${m.filename}` : undefined
-}
-
-async function fetchPostBySlug(slug: string): Promise<Post | null> {
+const fetchPostBySlug = cache(async (slug: string): Promise<Post | null> => {
   const payload = await getPayload({ config })
   const { docs } = await payload.find({
     collection: 'posts',
@@ -67,7 +46,7 @@ async function fetchPostBySlug(slug: string): Promise<Post | null> {
     limit: 1,
   })
   return (docs?.[0] as unknown as Post) ?? null
-}
+})
 
 // ----- Next Metadata (title + description only) -----
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -121,7 +100,7 @@ export default async function PostPage({ params }: Props) {
               fill
               className="object-contain p-3"   // <-- key: contain + padding, no cropping
               sizes="(max-width: 768px) 100vw, 896px"
-              priority={false}
+
             />
           </div>
         </div>

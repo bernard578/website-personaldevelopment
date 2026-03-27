@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { Card, CardContent } from '@/components/ui/card'
+import { mediaUrl } from '@/lib/media'
 import type { Metadata } from 'next'
 
 export const revalidate = 60
@@ -11,41 +12,20 @@ export const revalidate = 60
 export const metadata: Metadata = {
   title: 'Blog',
   description: 'Svi članci o osobnom razvoju: financije, vrijeme, navike…',
-  alternates: { canonical: '/blog' },
+  alternates: { canonical: 'https://osobnirazvoj.hr/blog' },
 }
 
 // ---- Types ----
-type Media =
-  | { url?: string | null; filename?: string | null }
-  | string
-  | null
-  | undefined
-
 type Post = {
   id: string
   title: string
   slug: string
   category?: string | null
-  thumbnail?: Media
+  thumbnail?: Parameters<typeof mediaUrl>[0]
   _status?: 'draft' | 'published'
 }
 
 // ---- Helpers ----
-function toRelative(u?: string | null) {
-  if (!u) return undefined
-  try {
-    return u.startsWith('http') ? new URL(u).pathname : u
-  } catch {
-    return u ?? undefined
-  }
-}
-
-function mediaUrl(m: Media) {
-  if (!m || typeof m === 'string') return undefined
-  const fromUrl = toRelative(m.url ?? undefined)
-  return fromUrl || (m.filename ? `/media/${m.filename}` : undefined)
-}
-
 function humanizeCategory(slug?: string | null) {
   if (!slug) return ''
   return slug
@@ -73,8 +53,8 @@ export default async function BlogPage() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => {
-          const title = String(post.title)
-          const postSlug = String(post.slug)
+          const title = post.title
+          const postSlug = post.slug
           const thumbnailUrl = mediaUrl(post.thumbnail)
           const category = humanizeCategory(post.category)
 
