@@ -10,6 +10,7 @@ const tools = [
   { href: "/alati/stopwatch", label: "Stopwatch", icon: "⏱️" },
   { href: "/alati/compound-interest-calculator", label: "Kalkulator složene kamate", icon: "💰" },
   { href: "/alati/pdv-kalkulator", label: "PDV kalkulator", icon: "🧮" },
+  { href: "/alati/kalkulator-place", label: "Kalkulator plaće", icon: "💼" },
 ];
 
 export default function AlatiLayout({ children }: { children: React.ReactNode }) {
@@ -138,6 +139,9 @@ function getBreadcrumb(pathname: string | null): Crumb[] {
   }
   if (pathname.startsWith("/alati/pdv-kalkulator")) {
     return [...base, { label: "PDV kalkulator" }];
+  }
+  if (pathname.startsWith("/alati/kalkulator-place")) {
+    return [...base, { label: "Kalkulator plaće" }];
   }
 
   return base;

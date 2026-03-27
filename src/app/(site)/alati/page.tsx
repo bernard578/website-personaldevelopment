@@ -74,6 +74,23 @@ export default function AlatiPage() {
         {/* ✅ NEW: kartica za PDV kalkulator */}
         <li>
           <Link
+            href="/alati/kalkulator-place"
+            className="block rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 hover:bg-gray-50 dark:hover:bg-gray-800/80 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl">💼</span>
+              <div>
+                <div className="font-medium">Kalkulator plaće</div>
+                <p className="text-sm text-gray-500">
+                  Izračunaj neto iz bruta i obrnuto za bilo koji grad u Hrvatskoj.
+                </p>
+              </div>
+            </div>
+          </Link>
+        </li>
+
+        <li>
+          <Link
             href="/alati/pdv-kalkulator"
             className="block rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 hover:bg-gray-50 dark:hover:bg-gray-800/80 transition-colors"
           >
